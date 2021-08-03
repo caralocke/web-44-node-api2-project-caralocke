@@ -28,4 +28,23 @@ router.get('/:id', (req, res) => {
             res.status(500).json({ message: 'The post information could not be retrieved'})
         })
 })
+
+router.post('/', (req, res) => {
+    if(!req.body.title || !req.body.contents) {
+        res.status(400).json({ message: 'Please provide title and contents for the post'})
+    } else {
+        const { title, contents } = req.body
+        Posts.insert({title, contents})
+            .then(newPost => {
+                Posts.findById(newPost.id)
+                    .then(post => {
+                        res.status(201).json(post)
+                    })
+            })
+            .catch(err => {
+                res.status(500).json({ message: 'There was an error while saving the post to the database'})
+            })
+    }
+})
+
 module.exports = router
